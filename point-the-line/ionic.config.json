@@ -1,0 +1,7 @@
+{
+  "name": "Point the Line",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
