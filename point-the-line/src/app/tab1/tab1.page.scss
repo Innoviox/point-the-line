@@ -1,0 +1,21 @@
+.border-right { /* left-side has border on right */
+  border-width: 0 1px 0 0;
+  height: 100%;
+}
+
+.border-left {
+  border-width: 0 0 0 1px;
+  height: 100%;
+}
+
+ion-col {
+  border: 1px solid black;
+}
+
+ion-grid {
+  height: 100%;
+}
+
+ion-row {
+  height: 100%;
+}
