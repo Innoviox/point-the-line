@@ -28,7 +28,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
-        direction.text = heading.magneticHeading
+        direction.text = "Direction: \(heading.magneticHeading)"
     }
 
     override func didReceiveMemoryWarning() {
