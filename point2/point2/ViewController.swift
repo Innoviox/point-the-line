@@ -57,6 +57,7 @@ extension ViewController: CLLocationManagerDelegate {
         }
         
         let dist = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
+        print(dist)
         let next_point = center.point(distance: dist, angle: heading.magneticHeading)
         
         last_line = MKPolyline(coordinates: [center, next_point], count: 2)
@@ -96,7 +97,14 @@ extension CLLocationCoordinate2D {
     func point(distance: Double, angle: CLLocationDirection) -> CLLocationCoordinate2D {
         let long_delta = distance * cos(angle * .pi / 180)
         let lat_delta  = distance * sin(angle * .pi / 180)
-        
-        return CLLocationCoordinate2D(latitude: latitude + lat_delta, longitude: longitude + long_delta)
+                
+        return CLLocationCoordinate2D(latitude:  (latitude + lat_delta).clamped(to: -90...90),
+                                      longitude: (longitude + long_delta).clamped(to: -180...180))
+    }
+}
+
+extension Comparable {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
