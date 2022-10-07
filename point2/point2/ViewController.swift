@@ -92,8 +92,10 @@ extension ViewController: MKMapViewDelegate {
 
 extension CLLocationCoordinate2D {
     func point(distance: Double, angle: CLLocationDirection) -> CLLocationCoordinate2D {
-        var long_delta = distance * cos(angle)
-        var lat_delta = distance * sin(angle)
+        var long_delta = distance * cos(angle * .pi / 180)
+        var lat_delta = distance * sin(angle * .pi / 180)
+        print(angle, cos(angle), sin(angle))
+
 //
 //
 //        if (angle < 90) { // positive lat, positive long
