@@ -13,6 +13,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var lineView: LineView!
     private var locationManager = CLLocationManager()
 
+    private var currentPlaceAnnotation = MKPointAnnotation()
+    
     @IBOutlet weak var map: MKMapView!
     
     override func viewDidLoad() {
@@ -33,6 +35,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if (CLLocationManager.locationServicesEnabled()) {
             locationManager.startUpdatingLocation()
         }
+        
+        map.addAnnotation(currentPlaceAnnotation)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
@@ -44,7 +48,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
             let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             self.map.setRegion(region, animated: true)
+            
+            currentPlaceAnnotation.coordinate = center
         }
+        
+//        mkAnnotation.title = self.setUsersClosestLocation(mLattitude: mUserLocation.coordinate.latitude, mLongitude: mUserLocation.coordinate.longitude)
     }
 
     override func didReceiveMemoryWarning() {
