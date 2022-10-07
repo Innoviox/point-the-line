@@ -11,14 +11,12 @@ import CoreLocation
 class ViewController: UIViewController, CLLocationManagerDelegate {
     private var lineView: LineView!
     private var locationManager = CLLocationManager()
-    
-    @IBOutlet weak var direction: UILabel!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.lineView = LineView(x: self.view.frame.width / 2, y: self.view.frame.origin.y, width: 10, height: self.view.frame.height)
-        self.view.addSubview(self.lineView)
+//        self.lineView = LineView(x: self.view.frame.width / 2, y: self.view.frame.origin.y, width: 10, height: self.view.frame.height)
+//        self.view.addSubview(self.lineView)
         
         if (CLLocationManager.headingAvailable()) {
             locationManager.headingFilter = 1
@@ -28,7 +26,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
-        direction.text = "Direction: \(heading.magneticHeading)"
+//        direction.text = "Direction: \(heading.magneticHeading)"
     }
 
     override func didReceiveMemoryWarning() {
