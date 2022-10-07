@@ -25,10 +25,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        self.lineView = LineView(x: self.view.frame.width / 2, y: self.view.frame.origin.y, width: 10, height: self.view.frame.height)
-//        self.view.addSubview(self.lineView)
-        
+
         if (CLLocationManager.headingAvailable()) {
             locationManager.headingFilter = 1
             locationManager.startUpdatingHeading()
@@ -42,7 +39,6 @@ class ViewController: UIViewController {
             locationManager.startUpdatingLocation()
         }
         
-//        map.addAnnotation(currentPlaceAnnotation)
         map.showsUserLocation = true
         map.delegate = self
     }
@@ -60,7 +56,9 @@ extension ViewController: CLLocationManagerDelegate {
             map.removeOverlay(line)
         }
         
-        last_line = MKPolyline(coordinates: [center, center], count: 2)
+        let next_point = center.point(distance: 1.0, angle: heading.magneticHeading)
+        
+        last_line = MKPolyline(coordinates: [center, next_point], count: 2)
         map.addOverlay(last_line!)
     }
     
@@ -89,5 +87,27 @@ extension ViewController: MKMapViewDelegate {
             return testlineRenderer
         }
         fatalError("Something wrong...")
+    }
+}
+
+extension CLLocationCoordinate2D {
+    func point(distance: Double, angle: CLLocationDirection) -> CLLocationCoordinate2D {
+        var long_delta = distance * cos(angle)
+        var lat_delta = distance * sin(angle)
+//
+//
+//        if (angle < 90) { // positive lat, positive long
+//
+//        } else if (angle < 180) { // negative lat, positive long
+//            lat_delta *= -1
+//        } else if (angle < 270) { // negative lat, negative long
+//            lat_delta *= -1
+//            long_delta *= -1
+//        } else { // positive lat, negative long
+//            long_delta *= -1
+//        }
+//
+        
+        return CLLocationCoordinate2D(latitude: latitude + lat_delta, longitude: longitude + long_delta)
     }
 }
