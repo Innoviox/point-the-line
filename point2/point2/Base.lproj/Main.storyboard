@@ -16,8 +16,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Izx-hR-pps">
-                                <rect key="frame" x="59" y="122" width="42" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Izx-hR-pps">
+                                <rect key="frame" x="59" y="122" width="235" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -25,12 +26,6 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Izx-hR-pps" secondAttribute="bottom" constant="719" id="DoG-hB-vfK"/>
-                            <constraint firstItem="Izx-hR-pps" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="59" id="PnI-ov-3Ta"/>
-                            <constraint firstItem="Izx-hR-pps" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="78" id="aoc-CO-V2t"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Izx-hR-pps" secondAttribute="trailing" constant="313" id="oUE-qc-1yc"/>
-                        </constraints>
                     </view>
                     <connections>
                         <outlet property="direction" destination="Izx-hR-pps" id="W1h-3w-VSu"/>
@@ -38,7 +33,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="20" y="98"/>
+            <point key="canvasLocation" x="18.840579710144929" y="97.767857142857139"/>
         </scene>
     </scenes>
     <resources>
