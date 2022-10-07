@@ -56,7 +56,8 @@ extension ViewController: CLLocationManagerDelegate {
             map.removeOverlay(line)
         }
         
-        let next_point = center.point(distance: 1.0, angle: heading.magneticHeading)
+        let dist = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
+        let next_point = center.point(distance: dist, angle: heading.magneticHeading)
         
         last_line = MKPolyline(coordinates: [center, next_point], count: 2)
         map.addOverlay(last_line!)
@@ -86,29 +87,15 @@ extension ViewController: MKMapViewDelegate {
             testlineRenderer.lineWidth = 2.0
             return testlineRenderer
         }
+        
         fatalError("Something wrong...")
     }
 }
 
 extension CLLocationCoordinate2D {
     func point(distance: Double, angle: CLLocationDirection) -> CLLocationCoordinate2D {
-        var long_delta = distance * cos(angle * .pi / 180)
-        var lat_delta = distance * sin(angle * .pi / 180)
-        print(angle, cos(angle), sin(angle))
-
-//
-//
-//        if (angle < 90) { // positive lat, positive long
-//
-//        } else if (angle < 180) { // negative lat, positive long
-//            lat_delta *= -1
-//        } else if (angle < 270) { // negative lat, negative long
-//            lat_delta *= -1
-//            long_delta *= -1
-//        } else { // positive lat, negative long
-//            long_delta *= -1
-//        }
-//
+        let long_delta = distance * cos(angle * .pi / 180)
+        let lat_delta  = distance * sin(angle * .pi / 180)
         
         return CLLocationCoordinate2D(latitude: latitude + lat_delta, longitude: longitude + long_delta)
     }
