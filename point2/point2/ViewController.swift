@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     private var last_line: MKPolyline?
     
     @IBOutlet weak var map: MKMapView!
+    @IBOutlet weak var resultsButton: UIButton!
     
     private var zoomed = false
 //    private var addedLine = false
@@ -41,6 +42,12 @@ class ViewController: UIViewController {
         
         map.showsUserLocation = true
         map.delegate = self
+        
+        view.bringSubviewToFront(resultsButton)
+    }
+    
+    @IBAction func resultsButtonClicked(_ sender: Any) {
+//        performSegue(withIdentifier: "toResults", sender: sender)
     }
 }
 
@@ -98,7 +105,7 @@ extension CLLocationCoordinate2D {
         let long_delta = distance * cos(angle * .pi / 180)
         let lat_delta  = distance * sin(angle * .pi / 180)
                 
-        return CLLocationCoordinate2D(latitude:  (latitude + lat_delta).clamped(to: -90...90),
+        return CLLocationCoordinate2D(latitude:   (latitude + lat_delta).clamped(to: -90...90),
                                       longitude: (longitude + long_delta).clamped(to: -180...180))
     }
 }
