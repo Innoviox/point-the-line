@@ -7,10 +7,14 @@
 
 import Foundation
 import UIKit
+import MapKit
+
 class ResultsTableViewController: UITableViewController {
+    public var center: CLLocationCoordinate2D?
+    public var line_length: Double = 0
+    public var angle: CLLocationDirection = 0
     
-    // Data model: These strings will be the data for the table view cells
-    let animals: [String] = ["Horse", "Cow", "Camel", "Sheep", "Goat"]
+    private var results: [MKMapItem] = []
     
     // cell reuse id (cells that scroll out of view can be reused)
     let cellReuseIdentifier = "cell"
@@ -31,7 +35,7 @@ class ResultsTableViewController: UITableViewController {
     
     // number of rows in table view
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.animals.count
+        return self.results.count
     }
     
     // create a cell for each table view row
@@ -41,7 +45,7 @@ class ResultsTableViewController: UITableViewController {
         let cell: UITableViewCell = (self.tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as UITableViewCell?)!
         
         // set the text from the data model
-        cell.textLabel?.text = self.animals[indexPath.row]
+        cell.textLabel?.text = self.results[indexPath.row].name
         
         return cell
     }
@@ -49,5 +53,28 @@ class ResultsTableViewController: UITableViewController {
     // method to run when table view cell is tapped
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You tapped cell number \(indexPath.row).")
+    }
+    
+    private func makeSearches() {
+        var length = 0.0
+
+        while length <= line_length {
+            let point = center!.point(distance: length, angle: angle)
+            
+            let request = MKLocalPointsOfInterestRequest(center: point, radius: 0.1)
+            let search = MKLocalSearch(request: request)
+            search.start { [unowned self] (response, error) in
+                guard error == nil else {
+                    print("plato search error", error)
+                    return
+                }
+                
+                for i in response?.mapItems ?? [] {
+                    results.append(i)
+                }
+            }
+            
+            length += 1
+        }
     }
 }

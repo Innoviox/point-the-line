@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     private var last_line: MKPolyline?
     private var line_length: Double = 0
     private var last_heading: CLLocationDirection = 0 // its a double
-    
+
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
     
@@ -49,28 +49,17 @@ class ViewController: UIViewController {
     }
     
     @IBAction func resultsButtonClicked(_ sender: Any) {
-        if let center = last_center {
-            var length = 0.0
-
-            while length <= line_length {
-                let point = center.point(distance: length, angle: last_heading)
-                
-                let request = MKLocalPointsOfInterestRequest(center: point, radius: 0.1)
-                let search = MKLocalSearch(request: request)
-                search.start { [unowned self] (response, error) in
-                    guard error == nil else {
-                        print("plato search error", error)
-                        return
-                    }
-                    
-                    print("plato search response", response?.mapItems)
-                }
-                
-                length += 1
+        performSegue(withIdentifier: "toResults", sender: sender)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toResults" {
+            if let rtvc = segue.destination as? ResultsTableViewController {
+                rtvc.center = last_center
+                rtvc.line_length = line_length
+                rtvc.angle = last_heading
             }
         }
-        
-        performSegue(withIdentifier: "toResults", sender: sender)
     }
 }
 
