@@ -27,7 +27,6 @@
                                 <buttonConfiguration key="configuration" style="plain" title="Results"/>
                                 <connections>
                                     <action selector="resultsButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Lr1-2S-eVj"/>
-                                    <segue destination="pmA-9P-WPX" kind="show" identifier="toResults" id="cIJ-LJ-Z2c"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -37,6 +36,7 @@
                     <connections>
                         <outlet property="map" destination="k8E-fh-e30" id="lJX-Mg-jR1"/>
                         <outlet property="resultsButton" destination="O1o-HE-7c1" id="tua-nb-jQJ"/>
+                        <segue destination="pmA-9P-WPX" kind="show" identifier="toResults" id="a4k-oz-jnz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

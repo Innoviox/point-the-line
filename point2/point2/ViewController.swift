@@ -47,7 +47,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func resultsButtonClicked(_ sender: Any) {
-//        performSegue(withIdentifier: "toResults", sender: sender)
+        performSegue(withIdentifier: "toResults", sender: sender)
     }
 }
 
