@@ -15,6 +15,8 @@ class ViewController: UIViewController {
 
     private var currentPlaceAnnotation = MKPointAnnotation()
     private var last_line: MKPolyline?
+    private var line_length: Double = 0
+    private var last_heading: CLLocationDirection = 0 // its a double
     
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
@@ -47,13 +49,34 @@ class ViewController: UIViewController {
     }
     
     @IBAction func resultsButtonClicked(_ sender: Any) {
+        if let center = last_center {
+            var length = 0.0
+
+            while length <= line_length {
+                let point = center.point(distance: length, angle: last_heading)
+                
+                let request = MKLocalPointsOfInterestRequest(center: point, radius: 0.1)
+                let search = MKLocalSearch(request: request)
+                search.start { [unowned self] (response, error) in
+                    guard error == nil else {
+                        print("plato search error", error)
+                        return
+                    }
+                    
+                    print("plato search response", response?.mapItems)
+                }
+                
+                length += 1
+            }
+        }
+        
         performSegue(withIdentifier: "toResults", sender: sender)
     }
 }
 
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateHeading heading: CLHeading) {
-//        direction.text = "Direction: \(heading.magneticHeading)"
+        last_heading = heading.magneticHeading
         
         guard let center = last_center else {
             return
@@ -63,9 +86,9 @@ extension ViewController: CLLocationManagerDelegate {
             map.removeOverlay(line)
         }
         
-        let dist = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
-        print(dist)
-        let next_point = center.point(distance: dist, angle: heading.magneticHeading)
+        line_length = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
+        print("line length", line_length)
+        let next_point = center.point(distance: line_length, angle: last_heading)
         
         last_line = MKPolyline(coordinates: [center, next_point], count: 2)
         map.addOverlay(last_line!)
