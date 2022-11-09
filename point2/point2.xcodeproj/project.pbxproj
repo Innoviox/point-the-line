@@ -18,6 +18,7 @@
 		20C02ED728EF3C96005C81F4 /* point2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C02ED628EF3C96005C81F4 /* point2UITests.swift */; };
 		20C02ED928EF3C96005C81F4 /* point2UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C02ED828EF3C96005C81F4 /* point2UITestsLaunchTests.swift */; };
 		20C02EE628EF3D3D005C81F4 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C02EE528EF3D3D005C81F4 /* LineView.swift */; };
+		20E311FE291C0BB400F5CA30 /* ResultsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E311FD291C0BB400F5CA30 /* ResultsTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		20C02ED628EF3C96005C81F4 /* point2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = point2UITests.swift; sourceTree = "<group>"; };
 		20C02ED828EF3C96005C81F4 /* point2UITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = point2UITestsLaunchTests.swift; sourceTree = "<group>"; };
 		20C02EE528EF3D3D005C81F4 /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
+		20E311FD291C0BB400F5CA30 /* ResultsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				20C02EC328EF3C95005C81F4 /* Info.plist */,
 				20C02EBB28EF3C94005C81F4 /* point2.xcdatamodeld */,
 				20C02EE528EF3D3D005C81F4 /* LineView.swift */,
+				20E311FD291C0BB400F5CA30 /* ResultsTableViewController.swift */,
 			);
 			path = point2;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20E311FE291C0BB400F5CA30 /* ResultsTableViewController.swift in Sources */,
 				20C02EB728EF3C94005C81F4 /* ViewController.swift in Sources */,
 				20C02EB328EF3C94005C81F4 /* AppDelegate.swift in Sources */,
 				20C02EB528EF3C94005C81F4 /* SceneDelegate.swift in Sources */,
