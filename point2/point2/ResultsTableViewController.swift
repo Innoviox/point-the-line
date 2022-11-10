@@ -31,6 +31,8 @@ class ResultsTableViewController: UITableViewController {
         // This view controller itself will provide the delegate methods and row data for the table view.
         tableView.delegate = self
         tableView.dataSource = self
+        
+        makeSearches()
     }
     
     // number of rows in table view
@@ -57,6 +59,8 @@ class ResultsTableViewController: UITableViewController {
     
     private func makeSearches() {
         var length = 0.0
+        
+        print("MAKING SEARCHES")
 
         while length <= line_length {
             let point = center!.point(distance: length, angle: angle)
@@ -70,11 +74,12 @@ class ResultsTableViewController: UITableViewController {
                 }
                 
                 for i in response?.mapItems ?? [] {
+                    print(results)
                     results.append(i)
                 }
             }
             
-            length += 1
+            length += 0.1
         }
     }
 }
