@@ -77,7 +77,7 @@ extension ViewController: CLLocationManagerDelegate {
         
         line_length = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
         print("line length", line_length)
-        let next_point = center.point(distance: line_length, angle: -last_heading + 90)
+        let next_point = center.point(distance: line_length, angle: last_heading)
         
         last_line = MKPolyline(coordinates: [center, next_point], count: 2)
         map.addOverlay(last_line!)
@@ -113,7 +113,8 @@ extension ViewController: MKMapViewDelegate {
 }
 
 extension CLLocationCoordinate2D {
-    func point(distance: Double, angle: CLLocationDirection) -> CLLocationCoordinate2D {
+    func point(distance: Double, angle preAngle: CLLocationDirection) -> CLLocationCoordinate2D {
+        let angle = 90 - preAngle;
         let long_delta = distance * cos(angle * .pi / 180)
         let lat_delta  = distance * sin(angle * .pi / 180)
                 
