@@ -10,6 +10,8 @@ import UIKit
 import MapKit
 
 class ResultsTableViewController: UITableViewController {
+    public static var THRESHOLD: CGFloat = 5 // threshold for angle delta
+    
     public var center: CLLocationCoordinate2D?
     public var region: MKCoordinateRegion?
     public var angle: CLLocationDirection = 0
@@ -75,10 +77,10 @@ class ResultsTableViewController: UITableViewController {
 
             for mapItem in response?.mapItems ?? [] {
                 let loc = mapItem.placemark.coordinate
-                print(center.heading(to: loc))
-                print(angle)
-                print(mapItem)
-                print("hahe")
+                
+                if abs(center.heading(to: loc) - angle) < ResultsTableViewController.THRESHOLD {
+                    print(mapItem)
+                }
             }
         }
         print(results.count)
