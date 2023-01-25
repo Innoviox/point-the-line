@@ -58,28 +58,29 @@ class ResultsTableViewController: UITableViewController {
     }
     
     private func makeSearches() {
-        var length = 0.0
-        
-        print("MAKING SEARCHES")
-
-        while length <= line_length {
-            let point = center!.point(distance: length, angle: angle)
-            
-            let request = MKLocalPointsOfInterestRequest(center: point, radius: 0.1)
-            let search = MKLocalSearch(request: request)
-            search.start { [unowned self] (response, error) in
-                guard error == nil else {
-                    print("plato search error", error)
-                    return
-                }
-                
-                for i in response?.mapItems ?? [] {
-                    print(results)
-                    results.append(i)
-                }
-            }
-            
-            length += 0.1
+        // request all searches on screen, then find the ones on the line is the current idea
+        // searching along line is very slow dw
+        guard let center = center else {
+            return
         }
+        
+        let request = MKLocalPointsOfInterestRequest(center: center, radius: line_length)
+        let search = MKLocalSearch(request: request)
+        search.start { [unowned self] (response, error) in
+            guard error == nil else {
+                print("plato search error", error)
+                return
+            }
+
+            for mapItem in response?.mapItems ?? [] {
+                let loc = mapItem.placemark.coordinate
+                let angledPoint = center.point(distance: center.distance(to: loc), angle: angle)
+                
+                print(angledPoint.distance(to: loc))
+                print(mapItem)
+                print("hahe");
+            }
+        }
+        print(results.count)
     }
 }

@@ -121,6 +121,12 @@ extension CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude:   (latitude + lat_delta).clamped(to: -90...90),
                                       longitude: (longitude + long_delta).clamped(to: -180...180))
     }
+    
+    func distance(to: CLLocationCoordinate2D) -> CLLocationDistance {
+        let from = CLLocation(latitude: latitude, longitude: longitude)
+        let to = CLLocation(latitude: to.latitude, longitude: to.longitude)
+        return from.distance(from: to)
+    }
 }
 
 extension Comparable {
