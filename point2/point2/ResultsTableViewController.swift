@@ -11,7 +11,7 @@ import MapKit
 
 class ResultsTableViewController: UITableViewController {
     public var center: CLLocationCoordinate2D?
-    public var line_length: Double = 0
+    public var region: MKCoordinateRegion?
     public var angle: CLLocationDirection = 0
     
     private var results: [MKMapItem] = []
@@ -60,25 +60,25 @@ class ResultsTableViewController: UITableViewController {
     private func makeSearches() {
         // request all searches on screen, then find the ones on the line is the current idea
         // searching along line is very slow dw
-        guard let center = center else {
+        guard let center = center, let region = region else {
             return
         }
         
-        let request = MKLocalPointsOfInterestRequest(center: center, radius: line_length)
+        let request = MKLocalPointsOfInterestRequest(coordinateRegion: region)
+        
         let search = MKLocalSearch(request: request)
         search.start { [unowned self] (response, error) in
             guard error == nil else {
-                print("plato search error", error)
+                print("plato search error", error!.localizedDescription)
                 return
             }
 
             for mapItem in response?.mapItems ?? [] {
                 let loc = mapItem.placemark.coordinate
-                let angledPoint = center.point(distance: center.distance(to: loc), angle: angle)
-                
-                print(angledPoint.distance(to: loc))
+                print(center.heading(to: loc))
+                print(angle)
                 print(mapItem)
-                print("hahe");
+                print("hahe")
             }
         }
         print(results.count)

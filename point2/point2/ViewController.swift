@@ -56,7 +56,7 @@ class ViewController: UIViewController {
         if segue.identifier == "toResults" {
             if let rtvc = segue.destination as? ResultsTableViewController {
                 rtvc.center = last_center
-                rtvc.line_length = line_length
+                rtvc.region = map.region
                 rtvc.angle = last_heading
             }
         }
@@ -126,6 +126,26 @@ extension CLLocationCoordinate2D {
         let from = CLLocation(latitude: latitude, longitude: longitude)
         let to = CLLocation(latitude: to.latitude, longitude: to.longitude)
         return from.distance(from: to)
+    }
+    
+    // might do something? https://stackoverflow.com/questions/6924742/valid-way-to-calculate-angle-between-2-cllocations
+    func heading(to: CLLocationCoordinate2D) -> Double {
+        let lat1 = self.latitude * .pi / 180
+        let lon1 = self.longitude * .pi / 180
+
+        let lat2 = to.latitude * .pi / 180
+        let lon2 = to.longitude * .pi / 180
+
+        let dLon = lon2 - lon1
+        let y = sin(dLon) * cos(lat2)
+        let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
+
+        let headingDegrees = atan2(y, x) * 180 / .pi
+        if headingDegrees >= 0 {
+            return headingDegrees
+        } else {
+            return headingDegrees + 360
+        }
     }
 }
 
