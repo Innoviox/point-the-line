@@ -53,7 +53,8 @@ class ViewController: UIViewController {
     }
     
     @IBAction func showPois(_ sender: Any) {
-        makeSearches() { results in
+        makeSearches() { [self] results in
+            print("RESULTS", results.count)
             for mapItem in results {
                 let annotation = MKPointAnnotation()
                 annotation.title = mapItem.name
@@ -63,13 +64,10 @@ class ViewController: UIViewController {
         }
     }
     
-    private func makeSearches(completion: ([MKMapItem]) -> Void) {
+    private func makeSearches(completion: @escaping ([MKMapItem]) -> Void) {
         // request all pois on screen, then find the ones on the line is the current idea
         // searching along line is very slow dw
-        
-        var results: [MKMapItem] = []
-        
-        let request = MKLocalPointsOfInterestRequest(coordinateRegion: map.regionThatFits(map.region))
+        let request = MKLocalPointsOfInterestRequest(coordinateRegion: map.region)
         
         let search = MKLocalSearch(request: request)
         search.start { [unowned self] (response, error) in
@@ -77,18 +75,9 @@ class ViewController: UIViewController {
                 print("plato search error", error!.localizedDescription)
                 return
             }
-
-            for mapItem in response?.mapItems ?? [] {
-                let loc = mapItem.placemark.coordinate
-                
-                if abs(last_center!.heading(to: loc) - last_heading) < ResultsTableViewController.THRESHOLD {
-                    results.append(mapItem)
-                }
-            }
+            
+            completion(response?.mapItems ?? [])
         }
-        
-        completion(results)
-//        print(results.count)
     }
     
     
