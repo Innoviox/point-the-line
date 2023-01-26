@@ -52,11 +52,51 @@ class ViewController: UIViewController {
         performSegue(withIdentifier: "toResults", sender: sender)
     }
     
+    @IBAction func showPois(_ sender: Any) {
+        makeSearches() { results in
+            for mapItem in results {
+                let annotation = MKPointAnnotation()
+                annotation.title = mapItem.name
+                annotation.coordinate = mapItem.placemark.coordinate
+                map.addAnnotation(annotation)
+            }
+        }
+    }
+    
+    private func makeSearches(completion: ([MKMapItem]) -> Void) {
+        // request all pois on screen, then find the ones on the line is the current idea
+        // searching along line is very slow dw
+        
+        var results: [MKMapItem] = []
+        
+        let request = MKLocalPointsOfInterestRequest(coordinateRegion: map.regionThatFits(map.region))
+        
+        let search = MKLocalSearch(request: request)
+        search.start { [unowned self] (response, error) in
+            guard error == nil else {
+                print("plato search error", error!.localizedDescription)
+                return
+            }
+
+            for mapItem in response?.mapItems ?? [] {
+                let loc = mapItem.placemark.coordinate
+                
+                if abs(last_center!.heading(to: loc) - last_heading) < ResultsTableViewController.THRESHOLD {
+                    results.append(mapItem)
+                }
+            }
+        }
+        
+        completion(results)
+//        print(results.count)
+    }
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toResults" {
             if let rtvc = segue.destination as? ResultsTableViewController {
                 rtvc.center = last_center
-                rtvc.region = map.region
+                rtvc.region = map.regionThatFits(map.region)
                 rtvc.angle = last_heading
             }
         }
@@ -76,7 +116,6 @@ extension ViewController: CLLocationManagerDelegate {
         }
         
         line_length = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
-        print("line length", line_length)
         let next_point = center.point(distance: line_length, angle: last_heading)
         
         last_line = MKPolyline(coordinates: [center, next_point], count: 2)

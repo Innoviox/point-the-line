@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 class ResultsTableViewController: UITableViewController {
-    public static var THRESHOLD: CGFloat = 5 // threshold for angle delta
+    public static var THRESHOLD: CGFloat = 360 // threshold for angle delta
     
     public var center: CLLocationCoordinate2D?
     public var region: MKCoordinateRegion?
@@ -60,7 +60,7 @@ class ResultsTableViewController: UITableViewController {
     }
     
     private func makeSearches() {
-        // request all searches on screen, then find the ones on the line is the current idea
+        // request all pois on screen, then find the ones on the line is the current idea
         // searching along line is very slow dw
         guard let center = center, let region = region else {
             return
