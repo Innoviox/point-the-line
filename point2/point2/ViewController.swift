@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     private var last_line: MKPolyline?
     private var line_length: Double = 0
     private var last_heading: CLLocationDirection = 0 // its a double
+    private var polygons: [MKPolygon] = []
 
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
@@ -67,19 +68,35 @@ class ViewController: UIViewController {
     private func makeSearches(completion: @escaping ([MKMapItem]) -> Void) {
         // request all pois on screen, then find the ones on the line is the current idea
         // searching along line is very slow dw
-        let request = MKLocalPointsOfInterestRequest(coordinateRegion: map.region)
         
-        let search = MKLocalSearch(request: request)
-        search.start { [unowned self] (response, error) in
-            guard error == nil else {
-                print("plato search error", error!.localizedDescription)
-                return
-            }
+        let nSquares: Double = 10
+        
+        let mapSpan = map.region.span
+        let span = MKCoordinateSpan(latitudeDelta: mapSpan.latitudeDelta / (nSquares * 2),
+                                    longitudeDelta: mapSpan.longitudeDelta / (nSquares * 2))
+        
+        polygons = []
+        
+        for i in 0...Int(nSquares) {
+            var region = MKCoordinateRegion()
+            region.center = last_center!.point(distance: line_length / nSquares, angle: last_heading)
+            region.span = span
             
-            completion(response?.mapItems ?? [])
+            render(region: region)
+            
+            let request = MKLocalPointsOfInterestRequest(coordinateRegion: region)
+            
+            let search = MKLocalSearch(request: request)
+            search.start { [unowned self] (response, error) in
+                guard error == nil else {
+                    print("plato search error", error!.localizedDescription)
+                    return
+                }
+                
+                completion(response?.mapItems ?? [])
+            }
         }
     }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toResults" {
@@ -89,6 +106,21 @@ class ViewController: UIViewController {
                 rtvc.angle = last_heading
             }
         }
+    }
+    
+    func render(region: MKCoordinateRegion) {
+        let center = region.center
+        let coordinates = [CLLocationCoordinate2D(latitude: center.latitude + region.span.latitudeDelta,
+                                                  longitude: center.longitude + region.span.longitudeDelta),
+                           CLLocationCoordinate2D(latitude: center.latitude + region.span.latitudeDelta,
+                                                  longitude: center.longitude - region.span.longitudeDelta),
+                           CLLocationCoordinate2D(latitude: center.latitude - region.span.latitudeDelta,
+                                                  longitude: center.longitude - region.span.longitudeDelta),
+                           CLLocationCoordinate2D(latitude: center.latitude - region.span.latitudeDelta,
+                                                  longitude: center.longitude + region.span.longitudeDelta)]
+        let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
+        polygons.append(polygon)
+        map.addOverlay(polygon)
     }
 }
 
@@ -134,6 +166,10 @@ extension ViewController: MKMapViewDelegate {
             testlineRenderer.strokeColor = .blue
             testlineRenderer.lineWidth = 2.0
             return testlineRenderer
+        } else if let polygon = overlay as? MKPolygon {
+            let renderer = MKPolygonRenderer(polygon: polygon)
+            renderer.fillColor = UIColor.blue.withAlphaComponent(0.25)
+            return renderer
         }
         
         fatalError("Something wrong...")
