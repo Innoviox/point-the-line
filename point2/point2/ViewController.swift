@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     private var line_length: Double = 0
     private var last_heading: CLLocationDirection = 0 // its a double
     private var polygons: [MKPolygon] = []
+    private var annotations: [MKPointAnnotation] = []
 
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
@@ -60,6 +61,7 @@ class ViewController: UIViewController {
                 let annotation = MKPointAnnotation()
                 annotation.title = mapItem.name
                 annotation.coordinate = mapItem.placemark.coordinate
+                annotations.append(annotation)
                 map.addAnnotation(annotation)
             }
         }
@@ -75,7 +77,7 @@ class ViewController: UIViewController {
         let span = MKCoordinateSpan(latitudeDelta: mapSpan.latitudeDelta / (nSquares * 2),
                                     longitudeDelta: mapSpan.longitudeDelta / (nSquares * 2))
         
-        clearPolygons()
+        clearAnnotations()
         
         for i in 0...Int(nSquares) {
             var region = MKCoordinateRegion()
@@ -123,10 +125,14 @@ class ViewController: UIViewController {
         map.addOverlay(polygon)
     }
     
-    func clearPolygons() {
+    func clearAnnotations() {
         for polygon in polygons {
             map.removeOverlay(polygon)
         }
+        for annotation in annotations {
+            map.removeAnnotation(annotation)
+        }
+        annotations = []
         polygons = []
     }
 }
@@ -157,9 +163,9 @@ extension ViewController: CLLocationManagerDelegate {
                 zoomed = true
                 let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.map.setRegion(region, animated: false)
-            } else {
+            }/* else {
                 self.map.setCenter(center, animated: true)
-            }
+            }*/
             
             last_center = center
         }
