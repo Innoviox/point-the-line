@@ -75,11 +75,11 @@ class ViewController: UIViewController {
         let span = MKCoordinateSpan(latitudeDelta: mapSpan.latitudeDelta / (nSquares * 2),
                                     longitudeDelta: mapSpan.longitudeDelta / (nSquares * 2))
         
-        polygons = []
+        clearPolygons()
         
         for i in 0...Int(nSquares) {
             var region = MKCoordinateRegion()
-            region.center = last_center!.point(distance: line_length / nSquares, angle: last_heading)
+            region.center = last_center!.point(distance: Double(i) * line_length / nSquares, angle: last_heading)
             region.span = span
             
             render(region: region)
@@ -121,6 +121,13 @@ class ViewController: UIViewController {
         let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
         polygons.append(polygon)
         map.addOverlay(polygon)
+    }
+    
+    func clearPolygons() {
+        for polygon in polygons {
+            map.removeOverlay(polygon)
+        }
+        polygons = []
     }
 }
 
