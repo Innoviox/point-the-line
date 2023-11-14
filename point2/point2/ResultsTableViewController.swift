@@ -84,5 +84,7 @@ class ResultsTableViewController: UITableViewController {
             }
         }
         print(results.count)
+        
+         
     }
 }
