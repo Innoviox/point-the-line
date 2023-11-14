@@ -103,3 +103,4 @@ dist
 # TernJS port file
 .tern-port
 apikey
+.ipynb_checkpoints/
