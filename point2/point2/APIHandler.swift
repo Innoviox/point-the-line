@@ -77,12 +77,20 @@ class APIHandler {
         }
     }
     
-//    def get_photo(name, size=512, url="https://places.googleapis.com/v1/{name}/media?key={key}&maxHeightPx={size}&maxWidthPx={size}"):
-//        r = requests.get(url.format(name=name, key=API_KEY, size=size), stream=True)
-//        return r.content
-    
-    func photos(name: String, size: Int = 512) {
-        let url = "https://places.googleapis.com/v1/\(name)/media?key=\(GMAK)&maxHeightPx=\(size)&maxWidthPx=\(size)"
+    func photo(name: String, size: Int = 512) {
+        let u = "https://places.googleapis.com/v1/\(name)/media?key=\(GMAK)&maxHeightPx=\(size)&maxWidthPx=\(size)"
+        let url = URL(string: u)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                // Handle HTTP request error
+            } else if let data = data {
+                // Handle HTTP request response
+            } else {
+                // Handle unexpected error
+            }
+        }
     }
 }
