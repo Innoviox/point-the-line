@@ -9,6 +9,9 @@ import UIKit
 import CoreLocation
 import MapKit
 
+let selected = UIColor.red
+let unselected = UIColor.red.withAlphaComponent(0.25)
+
 class ViewController: UIViewController {
     private var lineView: LineView!
     private var locationManager = CLLocationManager()
@@ -23,7 +26,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
     
+    @IBOutlet weak var hint: UILabel!
+    
     private var zoomed = false
+    
+    private var state = 0
     
     // dont set, its for simulator
     private var last_center: CLLocationCoordinate2D? = CLLocationCoordinate2D(latitude: 37.785834,
@@ -48,11 +55,15 @@ class ViewController: UIViewController {
         map.showsUserLocation = true
         map.delegate = self
         
+        // https://stackoverflow.com/questions/43778826/detecting-touches-on-mkoverlay
+        let tap = UITapGestureRecognizer(target: self, action: #selector(mapTapped(_:)))
+        self.map.addGestureRecognizer(tap)
+        
         // manual simulator stuff cause my phone doesnt work
         let region = MKCoordinateRegion(center: last_center!, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         self.map.setRegion(region, animated: false)
         
-        view.bringSubviewToFront(resultsButton)
+//        view.bringSubviewToFront(resultsButton)
         line_length = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
         let next_point = last_center!.point(distance: line_length, angle: last_heading)
         
@@ -65,15 +76,21 @@ class ViewController: UIViewController {
     }
     
     @IBAction func showPois(_ sender: Any) {
-        makeSearches() { [self] results in
-            print("RESULTS", results.count)
-            for mapItem in results {
-                let annotation = MKPointAnnotation()
-                annotation.title = mapItem.name
-                annotation.coordinate = mapItem.placemark.coordinate
-                annotations.append(annotation)
-                map.addAnnotation(annotation)
+        if (state == 0) {
+            makeSearches() { [self] results in
+                print("RESULTS", results.count)
+                for mapItem in results {
+                    let annotation = MKPointAnnotation()
+                    annotation.title = mapItem.name
+                    annotation.coordinate = mapItem.placemark.coordinate
+                    annotations.append(annotation)
+                    map.addAnnotation(annotation)
+                }
+                hint.isHidden = false
+                state = 1
             }
+        } else if (state == 1) {
+            
         }
     }
     
@@ -198,11 +215,39 @@ extension ViewController: MKMapViewDelegate {
             return renderer
         } else if let circle = overlay as? MKCircle {
             let renderer = MKCircleRenderer(circle: circle)
-            renderer.fillColor = UIColor.red.withAlphaComponent(0.25)
+            renderer.fillColor = unselected
             return renderer
         }
         
         fatalError("Something wrong...")
+    }
+    
+    @objc func mapTapped(_ gesture: UITapGestureRecognizer){
+        let point = gesture.location(in: self.map)
+        let coordinate = self.map.convert(point, toCoordinateFrom: nil)
+        let mappoint = MKMapPoint(coordinate)
+        for overlay in self.map.overlays {
+//            if let polygon = overlay as? MKPolygon {
+//                guard let renderer = self.map.renderer(for: polygon) as? MKPolygonRenderer else { continue }
+//                let tapPoint = renderer.point(for: mappoint)
+//                if renderer.path.contains(tapPoint) {
+//                    print("Tap was inside this polygon")
+//                    break // If you have overlapping overlays then you'll need an array of overlays which the touch is in, so remove this line.
+//                }
+//                continue
+//            }
+            if let circle = overlay as? MKCircle {
+                let centerMP = MKMapPoint(circle.coordinate)
+                let distance = mappoint.distance(to: centerMP) // distance between the touch point and the center of the circle
+                if distance <= circle.radius {
+                    guard let renderer = self.map.renderer(for: circle) as? MKCircleRenderer else { continue }
+                    renderer.fillColor = renderer.fillColor == unselected ? selected : unselected
+                    print("Tap was inside this circle")
+                    break // If you have overlapping overlays then you'll need an array of overlays which the touch is in, so remove this line.
+                }
+                continue
+            }
+        }
     }
 }
 
