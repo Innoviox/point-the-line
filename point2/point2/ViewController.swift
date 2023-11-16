@@ -90,7 +90,18 @@ class ViewController: UIViewController {
                 state = 1
             }
         } else if (state == 1) {
-            
+//            let photos = []
+            for overlay in self.map.overlays {
+                if let circle = overlay as? MKCircle {
+                    guard let renderer = self.map.renderer(for: circle) as? MKCircleRenderer else { continue }
+                    if (renderer.fillColor == selected) {
+                        // todo radius
+                        APIHandler.shared.nearbyPlaces(center: circle.coordinate) { (data, response, error) in
+                            print(response)
+                        }
+                    }
+                }
+            }
         }
     }
     

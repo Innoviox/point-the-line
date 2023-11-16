@@ -23,6 +23,8 @@ struct NearbyPlacesBody: Encodable {
     let locationRestriction: LocationRestriction
 }
 
+typealias RequestHandler = (Data?, URLResponse?, Error?) -> Void
+
 class APIHandler {
     static let shared = APIHandler()
     
@@ -34,7 +36,7 @@ class APIHandler {
         OAAK = Bundle.main.infoDictionary!["OPENAI_API_KEY"] as! String
     }
     
-    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") {
+    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby", handler: @escaping RequestHandler) {
         let body = NearbyPlacesBody(
             maxResultCount: 10,
             rankPreference: "DISTANCE",
@@ -63,35 +65,19 @@ class APIHandler {
             let data = try encoder.encode(body)
             request.httpBody = data
 
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                if let error = error {
-                    // Handle HTTP request error
-                } else if let data = data {
-                    // Handle HTTP request response
-                } else {
-                    // Handle unexpected error
-                }
-            }
+            let task = URLSession.shared.dataTask(with: request, completionHandler: handler)
         } catch {
             
         }
     }
     
-    func photo(name: String, size: Int = 512) {
+    func photo(name: String, size: Int = 512, handler: @escaping RequestHandler) {
         let u = "https://places.googleapis.com/v1/\(name)/media?key=\(GMAK)&maxHeightPx=\(size)&maxWidthPx=\(size)"
         let url = URL(string: u)!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                // Handle HTTP request error
-            } else if let data = data {
-                // Handle HTTP request response
-            } else {
-                // Handle unexpected error
-            }
-        }
+        let task = URLSession.shared.dataTask(with: request, completionHandler: handler)
     }
     
     func adjectives(data: Data) {
