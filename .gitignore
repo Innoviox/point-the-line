@@ -108,3 +108,5 @@ places
 openapikey
 point2/ApiKeys.xcconfig
 *.xcconfig
+point2/Pods
+point2/Podfile.lock

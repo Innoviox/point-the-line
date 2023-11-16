@@ -7,6 +7,9 @@
 
 import Foundation
 import CoreLocation
+import Alamofire
+
+struct NearbyPlacesResponse: Decodable { let url: String }
 
 class APIHandler {
     static let shared = APIHandler()
@@ -20,7 +23,7 @@ class APIHandler {
     }
     
     func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") {
-        let body: [String : Any] = [
+        let body: [String : Encodable.self] = [
             "maxResultCount": 10,
             "rankPreference": "DISTANCE",
             "locationRestriction": [
@@ -34,17 +37,17 @@ class APIHandler {
             ]
         ]
 
-        let headers = [
+        let headers: HTTPHeaders = [
             "X-Goog-Api-Key": GMAK,
             "X-Goog-FieldMask": "places.displayName,places.photos"
         ]
         
         AF.request(url,
                    method: .post,
-                   headers: headers,
                    parameters: body,
-                   encoder: JSONParameterEncoder.default)
-        .responseDecodable(of: DecodableType.self) { response in
+                   encoder: JSONParameterEncoder.default,
+                   headers: headers)
+          .responseDecodable(of: NearbyPlacesResponse.self) { response in
             print(response)
         }
     }
