@@ -17,16 +17,17 @@ class ViewController: UIViewController {
     private var last_line: MKPolyline?
     private var line_length: Double = 0
     private var last_heading: CLLocationDirection = 0 // its a double
-    private var polygons: [MKPolygon] = []
+    private var polygons: [MKOverlay] = []
     private var annotations: [MKPointAnnotation] = []
 
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var resultsButton: UIButton!
     
     private var zoomed = false
-//    private var addedLine = false
     
-    private var last_center: CLLocationCoordinate2D?
+    // dont set, its for simulator
+    private var last_center: CLLocationCoordinate2D? = CLLocationCoordinate2D(latitude: 37.785834,
+                                                                              longitude: -122.406417)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +48,16 @@ class ViewController: UIViewController {
         map.showsUserLocation = true
         map.delegate = self
         
+        // manual simulator stuff cause my phone doesnt work
+        let region = MKCoordinateRegion(center: last_center!, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        self.map.setRegion(region, animated: false)
+        
         view.bringSubviewToFront(resultsButton)
+        line_length = sqrt(pow(self.map.region.span.longitudeDelta, 2) + pow(self.map.region.span.latitudeDelta, 2))
+        let next_point = last_center!.point(distance: line_length, angle: last_heading)
+        
+        last_line = MKPolyline(coordinates: [last_center!, next_point], count: 2)
+        map.addOverlay(last_line!)
     }
     
     @IBAction func resultsButtonClicked(_ sender: Any) {
@@ -79,24 +89,24 @@ class ViewController: UIViewController {
         
         clearAnnotations()
         
-        for i in 0...Int(nSquares) {
+        for i in 0..<Int(nSquares) {
             var region = MKCoordinateRegion()
-            region.center = last_center!.point(distance: Double(i) * line_length / nSquares, angle: last_heading)
+            region.center = last_center!.point(distance: (Double(i) + 0.5) * line_length / nSquares, angle: last_heading)
             region.span = span
             
             render(region: region)
             
-            let request = MKLocalPointsOfInterestRequest(coordinateRegion: region)
-            
-            let search = MKLocalSearch(request: request)
-            search.start { [unowned self] (response, error) in
-                guard error == nil else {
-                    print("plato search error", error!.localizedDescription)
-                    return
-                }
-                
-                completion(response?.mapItems ?? [])
-            }
+//            let request = MKLocalPointsOfInterestRequest(coordinateRegion: region)
+//
+//            let search = MKLocalSearch(request: request)
+//            search.start { [unowned self] (response, error) in
+//                guard error == nil else {
+//                    print("plato search error", error!.localizedDescription)
+//                    return
+//                }
+//
+//                completion(response?.mapItems ?? [])
+//            }
         }
     }
     
@@ -121,8 +131,13 @@ class ViewController: UIViewController {
                            CLLocationCoordinate2D(latitude: center.latitude - region.span.latitudeDelta,
                                                   longitude: center.longitude + region.span.longitudeDelta)]
         let polygon = MKPolygon(coordinates: coordinates, count: coordinates.count)
-        polygons.append(polygon)
-        map.addOverlay(polygon)
+        
+        print(center, region.span.latitudeDelta)
+        let circle = MKCircle(center: center, radius: 100)
+        polygons.append(circle)
+//        polygons.append(polygon)
+        map.addOverlay(circle)
+//        map.addOverlay(polygon)
     }
     
     func clearAnnotations() {
@@ -163,9 +178,7 @@ extension ViewController: CLLocationManagerDelegate {
                 zoomed = true
                 let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
                 self.map.setRegion(region, animated: false)
-            }/* else {
-                self.map.setCenter(center, animated: true)
-            }*/
+            }
             
             last_center = center
         }
@@ -182,6 +195,10 @@ extension ViewController: MKMapViewDelegate {
         } else if let polygon = overlay as? MKPolygon {
             let renderer = MKPolygonRenderer(polygon: polygon)
             renderer.fillColor = UIColor.blue.withAlphaComponent(0.25)
+            return renderer
+        } else if let circle = overlay as? MKCircle {
+            let renderer = MKCircleRenderer(circle: circle)
+            renderer.fillColor = UIColor.red.withAlphaComponent(0.25)
             return renderer
         }
         
