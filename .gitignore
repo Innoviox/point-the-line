@@ -106,3 +106,5 @@ apikey
 .ipynb_checkpoints/
 places
 openapikey
+point2/ApiKeys.xcconfig
+*.xcconfig
