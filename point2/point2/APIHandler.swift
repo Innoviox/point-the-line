@@ -7,7 +7,6 @@
 
 import Foundation
 import CoreLocation
-import Alamofire
 
 struct Circle: Encodable {
     let center: [String: CLLocationDegrees]
@@ -35,7 +34,7 @@ class APIHandler {
         OAAK = Bundle.main.infoDictionary!["OPENAI_API_KEY"] as! String
     }
     
-    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") async {
+    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") {
         let body = NearbyPlacesBody(
             maxResultCount: 10,
             rankPreference: "DISTANCE",
@@ -64,7 +63,15 @@ class APIHandler {
             let data = try encoder.encode(body)
             request.httpBody = data
 
-            let (responseData, response) = try await URLSession.shared.upload(for: request, from: data, delegate: self)
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                if let error = error {
+                    // Handle HTTP request error
+                } else if let data = data {
+                    // Handle HTTP request response
+                } else {
+                    // Handle unexpected error
+                }
+            }
         } catch {
             
         }
@@ -77,8 +84,5 @@ class APIHandler {
     func photos(name: String, size: Int = 512) {
         let url = "https://places.googleapis.com/v1/\(name)/media?key=\(GMAK)&maxHeightPx=\(size)&maxWidthPx=\(size)"
         
-        AF.request(url).responseData { response in
-            debugPrint("Response: \(response)")
-        }
     }
 }
