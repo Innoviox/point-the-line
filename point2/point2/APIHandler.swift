@@ -9,7 +9,20 @@ import Foundation
 import CoreLocation
 import Alamofire
 
-struct NearbyPlacesResponse: Decodable { let url: String }
+struct Circle: Encodable {
+    let center: [String: CLLocationDegrees]
+    let radius: Int
+}
+
+struct LocationRestriction: Encodable {
+    let circle: Circle
+}
+
+struct NearbyPlacesBody: Encodable {
+    let maxResultCount: Int
+    let rankPreference: String
+    let locationRestriction: LocationRestriction
+}
 
 class APIHandler {
     static let shared = APIHandler()
@@ -22,33 +35,38 @@ class APIHandler {
         OAAK = Bundle.main.infoDictionary!["OPENAI_API_KEY"] as! String
     }
     
-    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") {
-        let body: [String : Encodable.self] = [
-            "maxResultCount": 10,
-            "rankPreference": "DISTANCE",
-            "locationRestriction": [
-                "circle": [
-                    "center": [
-                        "latitude": center.latitude,
-                        "longitude": center.longitude
-                    ],
-                    "radius": radius
-                ]
-            ]
-        ]
+    func nearbyPlaces(center: CLLocationCoordinate2D, radius: Int = 100, url: String = "https://places.googleapis.com/v1/places:searchNearby") async {
+        let body = NearbyPlacesBody(
+            maxResultCount: 10,
+            rankPreference: "DISTANCE",
+            locationRestriction: LocationRestriction(
+                circle: Circle(center: [
+                    "latitude": center.latitude,
+                    "longitude": center.longitude
+                ],
+                radius: radius)
+            )
+        )
 
-        let headers: HTTPHeaders = [
+        let headers: [String: String] = [
             "X-Goog-Api-Key": GMAK,
             "X-Goog-FieldMask": "places.displayName,places.photos"
         ]
         
-        AF.request(url,
-                   method: .post,
-                   parameters: body,
-                   encoder: JSONParameterEncoder.default,
-                   headers: headers)
-          .responseDecodable(of: NearbyPlacesResponse.self) { response in
-            print(response)
+        do {
+            let url = URL(string: url)!
+            var request = URLRequest(url: url)
+            for (header, value) in headers {
+                request.setValue(value, forHTTPHeaderField: header)
+            }
+            request.httpMethod = "POST"
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(body)
+            request.httpBody = data
+
+            let (responseData, response) = try await URLSession.shared.upload(for: request, from: data, delegate: self)
+        } catch {
+            
         }
     }
     
