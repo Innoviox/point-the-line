@@ -80,20 +80,12 @@ class APIHandler {
         let task = URLSession.shared.dataTask(with: request, completionHandler: handler)
     }
     
-    func adjectives(data: Data) {
+    func adjectives(data: Data, handler: @escaping RequestHandler) {
         let u = ""
         let url = URL(string: u)!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                // Handle HTTP request error
-            } else if let data = data {
-                // Handle HTTP request response
-            } else {
-                // Handle unexpected error
-            }
-        }
+        let task = URLSession.shared.dataTask(with: request, completionHandler: handler)
     }
 }
